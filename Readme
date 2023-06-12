@@ -1,0 +1,3 @@
+this a basic login in fastAPI with mongoDB
+fastapi_login python packege is used for login functionality
+jinja templates are used for rendering the templates
