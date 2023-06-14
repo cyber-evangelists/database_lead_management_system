@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+<title>Upload Data</title>
+{% endblock%}
+
+{% block importation %}
+{% endblock%}
+
+{% block content %}
+<div class="container">
+    <header class="text-center">
+        <h2 class="display-4">Upload Data</h2>
+    </header>
+    <br>
+    <div class="card px-4">
+        <br>
+        <form method="post" id="file-form">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-12">
+                <div class="form-group">
+                    <label for="file">Select CSV File</label>
+                    <input type="file" class="form-control-file" id="csv_file" name="csv_file" accept=".csv">
+                </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-block text-white" style="background-color:#443ea2;">Upload</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="progress">
+            <div class="progress-bar" role="progressbar" style="width: 0%;"></div>
+        </div>
+        <br>
+        <div class="alert alert-danger" role="alert" style="display:none;" id="div_message">
+        </div>
+    </div>
+</div>
+{% endblock%}
+
+{% block modals %}
+
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+    
+    $(document).ready(function () {
+        $('#upload_elt').addClass("active");
+
+        var form = $('#file-form');
+        var progressBar = $('.progress-bar');
+        var div_message = $('#div_message');
+        
+        form.submit(function(event) {
+            var form = this;
+            var data = new FormData(form);
+            div_message.text("Processing... do not leave the page until you receive the completion message.");
+            div_message.show();
+            $.ajax({
+                xhr: function() {
+                    var xhr = new XMLHttpRequest();
+                    xhr.upload.addEventListener('progress', function(event) {
+                    if (event.lengthComputable) {
+                        var percentComplete = event.loaded / event.total * 100;
+                        progressBar.css('width', percentComplete + '%').attr('aria-valuenow', percentComplete);
+                        progressBar.text(percentComplete.toFixed(0) + '%');
+                    }
+                    });
+                    return xhr;
+                },
+                type: 'POST',
+                url: form.action,
+                data: data,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function(data) {
+                    div_message.text("");
+                    div_message.hide();
+                    var error = data["error"];
+                    if (error == 0)
+                        show_success_message(data["message"]);
+                    else
+                        show_faild_message(data["message"]);
+                },
+                error: function(error) {
+                    div_message.text("");
+                    div_message.hide();
+                    show_faild_message("Error server side, please refresh the page and try again!");
+                }
+            });
+            event.preventDefault();
+        });
+    })
+
+</script>
+{% endblock%}

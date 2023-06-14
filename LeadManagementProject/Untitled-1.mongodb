@@ -1,0 +1,22 @@
+const database = 'Lead_Management';
+const collection = 'Leads';
+
+// The current database to use.
+use(database);
+
+db.Leads.insertOne(
+  {data : {
+    First_Name:"islem",
+    Last_Name:"islem",
+    Email:"",
+    Birthdate:"",
+    Birthplace:"France",
+    Address:"",
+    ZIP:75000,
+    City:"Paris",
+    Coutry:"Algeria",
+    Job_Position:"Facebook",
+    Workplace:"Facebook",
+    IP:""
+  }}
+)

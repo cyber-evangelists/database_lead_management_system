@@ -1,0 +1,68 @@
+{% load static %}
+{% load crispy_forms_tags %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    {% block title %}{% endblock %}
+    {% block importation %}{% endblock %}
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.PNG' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA==" crossorigin="anonymous" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/baseStyle.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/toastr.min.css' %}">
+    {% block style %} {% endblock %}
+</head>
+
+<body>
+    <div class='dashboard'>
+        <div class="dashboard-nav">
+            <header><a href="#" class="menu-toggle"><i class="fas fa-bars"></i></a><a href="/" class="brand-logo">
+                        <span>Lead Management</span>
+                    </a>
+            </header>
+            <nav class="dashboard-nav-list">
+                <!--<a id="home_elt" href="#" class="dashboard-nav-item"><i class="fas fa-home"></i>Home </a>-->
+                <a id="leads_elt" href="{% url 'dashboard' %}" class="dashboard-nav-item"><i class="fas fa-tachometer-alt"></i>Leads</a>
+                {% if user.is_superuser %}
+                    <a id="upload_elt" href="{% url 'upload' %}" class="dashboard-nav-item"><i class="fas fa-file-upload"></i> Upload </a>
+                    <a id="users_elt" href="{% url 'users' %}" class="dashboard-nav-item"><i class="fas fa-users"></i> Users </a>
+                    <a id="logs_elt" href="{% url 'logs' %}" class="dashboard-nav-item"><i class="fas fa-history"></i> Logs </a>
+                {% endif %}
+                <!--
+                <div class='dashboard-nav-dropdown'>
+                    <a href="#!" class="dashboard-nav-item dashboard-nav-dropdown-toggle"><i
+                            class="fas fa-users"></i> Users
+                    </a>
+                    <div class='dashboard-nav-dropdown-menu'><a href="#" class="dashboard-nav-dropdown-item">All</a><a
+                            href="#" class="dashboard-nav-dropdown-item">Subscribed</a><a href="#"
+                            class="dashboard-nav-dropdown-item">Non-subscribed</a><a href="#"
+                            class="dashboard-nav-dropdown-item">Banned</a><a href="#"
+                            class="dashboard-nav-dropdown-item">New</a></div>
+                </div>
+                -->
+                <a id="profile_elt" href="{% url 'profile' %}" class="dashboard-nav-item"><i class="fas fa-user"></i> Profile </a>
+                <div class="nav-item-divider"></div>
+                <a href="{% url 'logout' %}" class="dashboard-nav-item"><i class="fas fa-sign-out-alt"></i> Logout </a>
+            </nav>
+        </div>
+        <div class='dashboard-app'>
+            <header class='dashboard-toolbar'><a href="#" class="menu-toggle"><i class="fas fa-bars"></i></a></header>
+            <div class='dashboard-content'>
+                <div class='container'>
+                    {% block content %} {% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/popper.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/toastr.min.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block scripts %} {% endblock %}
+</body>
+
+</html>

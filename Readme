@@ -1,3 +1,25 @@
-this a basic login in fastAPI with mongoDB
-fastapi_login python packege is used for login functionality
-jinja templates are used for rendering the templates
+this project have django project have functionality
+
+login
+dashboard, 
+logs, 
+upload csv file processing it,
+add user functionality, 
+export data in csv,
+logout
+edit current profile,
+
+frontend html files have been rendering by jinja templates,
+
+every functionality has its jinja template
+
+user edit and add functionality is used from django admin panel
+
+tables have filter and pagination functionality.
+
+processing the csv file checking the columns validity to
+ 
+make it lower case and replace space with "_" 
+
+and perofrm some database operations
+

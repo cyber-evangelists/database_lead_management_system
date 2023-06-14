@@ -1,0 +1,52 @@
+{% load static %}
+{% load crispy_forms_tags %}
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Sign In</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+  <section class="ftco-section">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-5">
+          <div class="wrap">
+            <div class="img" style='background-image: url("{% static 'images/bg-1.jpg' %}");'></div>
+            <div class="login-wrap p-4 p-md-5">
+              {% if messages%}
+                {% for message in messages %}
+                  <div class="row alert alert-danger col-md-12"> 
+                    {{ message }}
+                  </div>
+                {% endfor %}
+              {% endif %}
+              <div class="d-flex">
+                <div class="w-100">
+                  <h3 class="mb-4">Sign In</h3>
+                </div>
+              </div>
+              <form method="post" class="signin-form">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <div class="form-group">
+                  <input type="submit" class="form-control btn btn-primary rounded submit px-3" value="Sign In">
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="{% static 'js/jquery.min.js' %}"></script>
+  <script src="{% static 'js/popper.js' %}"></script>
+  <script src="{% static 'js/bootstrap.min.js' %}"></script>
+</body>
+
+</html>

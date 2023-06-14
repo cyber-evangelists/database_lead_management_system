@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+<title>Profile settings</title>
+{% endblock%}
+
+{% block importation %}
+{% endblock%}
+
+{% block content %}
+<div class="container">
+    <header class="text-center">
+        <h3 class="display-4">Profile Settings</h3>
+    </header>
+    <br>
+    <div class="card px-4">
+        <br>
+            <!--
+            <div class="col-12">
+                <div class="d-flex flex-column">
+                    <p class="text mb-1">Email</p>
+                    <input class="form-control mb-3" type="text" id="user_email" placeholder="" value="{{data.email}}">
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="d-flex flex-column">
+                    <p class="text mb-1">Date Joined</p>
+                    <input class="form-control mb-3 pt-2 " type="text" value="{{data.date_joined}}" disabled>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="d-flex flex-column">
+                    <p class="text mb-1">Last Login</p>
+                    <input class="form-control mb-3" type="text" placeholder="" value="{{data.last_login}}" disabled>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="d-flex flex-column">
+                    <p class="text mb-1">First Name</p>
+                    <input class="form-control mb-3" id="user_first_name" type="text" value="{{data.first_name}}">
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="d-flex flex-column">
+                    <p class="text mb-1">Last Name</p>
+                    <input class="form-control mb-3" id="user_last_name" type="text" value="{{data.last_name}}">
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="d-flex flex-column">
+                    <p class="text mb-1">Password</p>
+                    <input class="form-control mb-3" type="password" id="user_password">
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="d-flex flex-column">
+                    <p class="text mb-1">Confirm Password</p>
+                    <input class="form-control mb-3" type="password" id="user_confirm_password" >
+                </div>
+            </div>
+            <div class="col-6">
+                <button type="submit" class="btn mb-3" style="background-color: #443ea2 !important;">
+                    <span class="ps-3">Update</span>
+                </button>
+            </div>-->
+        <form method="post" id="form-profile-settings">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input class="form-control mb-3" type="text" name="email" placeholder="" value="{{data.email}}">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Date joined</label>
+                        <input class="form-control mb-3 pt-2 " type="text" name="join_date" value="{{data.date_joined}}" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input class="form-control mb-3" name="first_name" type="text" value="{{data.first_name}}">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Last Login</label>
+                        <input class="form-control mb-3" type="text" name="last_login" value="{{data.last_login}}" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input class="form-control mb-3" name="last_name" type="text" value="{{data.last_name}}">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input class="form-control mb-3" type="password" name="password">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Confirm Password</label>
+                        <input class="form-control mb-3" type="password" name="password_confirmation" >
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-block text-white" style="background-color:#443ea2;">Apply</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <!--<div class="row gx-3">
+            <form method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary mb-3" style="background-color: #443ea2 !important;">
+                        <span class="ps-3">Update</span>
+                    </button>
+                </div>
+            </form>
+        </div>-->
+    </div>
+</div>
+{% endblock%}
+
+{% block modals %}
+
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+    
+    $(document).ready(function () {
+        $('#profile_elt').addClass("active");
+
+        $("#form-profile-settings").submit(function(event) {
+            event.preventDefault();
+            var form = this;
+            var data = new FormData(form);
+            console.log(data);
+            $.ajax({
+                type: 'POST',
+                url: form.action,
+                data: data,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function(data) {
+                    var error = data["error"];
+                    if (error == 0)
+                        {
+                            show_success_message(data["message"]);
+                            setTimeout(function () {
+                                location.reload();
+                            }, 1500);
+                        }
+                    else
+                        show_faild_message(data["message"]);
+                },
+                error: function(error) {
+                    show_faild_message(error);
+                }
+            });
+        
+        });
+    })
+
+    $(document).on({
+        ajaxStart: function () {
+            $("body").addClass("loading");
+        },
+        ajaxStop: function () {
+            $("body").removeClass("loading");
+        }
+    });
+
+</script>
+{% endblock%}
