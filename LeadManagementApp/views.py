@@ -90,11 +90,10 @@ def upload(request):
             try:
                 csv_file = request.FILES['csv_file']
             except Exception as e:
-                print(e)
                 return JsonResponse({'error':1,'message':'Please check that you have selected a csv file and that it is not damaged!'})
             else:
                 try:
-                    reader = csv.reader((line.decode('utf-8', errors='replace') for line in csv_file), delimiter=";")
+                    reader = csv.reader(line.decode('utf-8') for line in csv_file)
                     return JsonResponse(processCsvFile(reader))
                 except Exception as e:
                     print(e)

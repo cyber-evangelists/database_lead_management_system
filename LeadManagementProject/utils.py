@@ -5,7 +5,7 @@ import re,json
 from itertools import islice
 from bson.objectid import ObjectId
 
-from LeadManagementApp.global_variables import columns_to_check_existence,excluded_columns_from_filters,columns_that_have_list
+from LeadManagementApp.global_variables import columns_to_check_existence,excluded_columns_from_filters
 
 def redirect_if_authenticated(user):
     return not user.is_authenticated
@@ -69,32 +69,26 @@ def processCsvFile(reader):
                 if not chunk:
                     break
                 add_new_leads(header,chunk)
-            return {'error':0,'message':'The process was done successfully!'}
+            return {'error':0,'message':'the process was done successfully!'}
         else:
             return {'error':1,'message':'Error when adding the new columns to the database, please try again later!'}
     else:
-        return {'error':1,'message':'Please check The columns names, they are considered valid if it contains only alphanumeric characters and underscores '+header}
+        return {'error':1,'message':'please check The columns names, they are considered valid if it contains only alphanumeric characters and underscores'}
 
 def check_columns_validity(header):
     # Check the validity of each column name
     for column in header:
-        if column != "":
-            # Remove leading and trailing whitespaces
-            column = column.replace(" ", "_")
-            # Check if the column name contains only alphanumeric characters and underscores
-            if not re.match("^[a-zA-Z0-9_]+$", column):
-                return False
+        # Remove leading and trailing whitespaces
+        column = column.strip()
+        # Check if the column name contains only alphanumeric characters and underscores
+        if not re.match("^[a-zA-Z0-9_]+$", column):
+            return False
     return True
 
 def add_new_columns(header):
     try:
         old_columns = get_leads_columns()
-        old_columns_lowercase = [x.lower() for x in old_columns]
-        new_columns = []
-        for item in header:
-            if item.lower() not in old_columns_lowercase:
-                new_columns.append(item)
-
+        new_columns = [item for item in header if item not in old_columns]
         columns = old_columns+new_columns
         
         db_handle,db_client = get_db_handle()
@@ -122,23 +116,17 @@ def add_new_leads(header,chunk):
 
 def check_columns_existence(header):
     #we check at first if the columns used to check existence are there or not
-    header_lowercase = [x.lower() for x in header]
     for column in columns_to_check_existence:
-        if column.lower() not in header_lowercase:
+        if column not in header:
             return False
     return True
 
 def add_new_lead(leads_collection,filters_collection,header,row,columns_existence_exist):
     lead_values = {}
     for i, column in enumerate(header):
-        value = row[i]
-        if column not in columns_that_have_list:
-            lead_values = {**lead_values,**{column:value}}
-        else:
-            values = value.split(',')
-            lead_values = {**lead_values,**{column:values}}
+        lead_values = {**lead_values,**{column:row[i]}}
         if column not in excluded_columns_from_filters:
-            update_filters_collection(filters_collection,column,value)
+            update_filters_collection(filters_collection,column,row[i])
     if columns_existence_exist:
         query = {"data."+columns_to_check_existence[0]: lead_values[columns_to_check_existence[0]], "data."+columns_to_check_existence[1]: lead_values[columns_to_check_existence[1]], "data."+columns_to_check_existence[2]: lead_values[columns_to_check_existence[2]]}
         lead = leads_collection.find_one(query)
@@ -169,23 +157,18 @@ def check_exists_columns_values(lead,lead_values):
         database_columns = get_leads_columns()
         for column in database_columns:
             if column in lead_values and oiginal_lead_values[column] != lead_values[column]:
-                if column not in columns_that_have_list:
-                    if lead_values[column] != "":
-                        current_version = 1
-                        while True:
-                            versioned_attribute = f"{column}{current_version}"
-                            if versioned_attribute not in oiginal_lead_values:
-                                break
-                            if lead_values[column] == oiginal_lead_values[versioned_attribute]:
-                                current_version = -1
-                                break
-                            current_version += 1
-                        if current_version != -1 :
-                            add_new_columns([versioned_attribute])
-                            oiginal_lead_values[versioned_attribute] = lead_values[column]
-                else:
-                    oiginal_lead_values[column] = list(set(oiginal_lead_values[column] + lead_values[column]))
-
+                current_version = 1
+                while True:
+                    versioned_attribute = f"{column}{current_version}"
+                    if versioned_attribute not in oiginal_lead_values:
+                        break
+                    if lead_values[column] == oiginal_lead_values[versioned_attribute]:
+                        current_version = -1
+                        break
+                    current_version += 1
+                if current_version != -1 :
+                    add_new_columns([versioned_attribute])
+                    oiginal_lead_values[versioned_attribute] = lead_values[column]
     except Exception as e:
         print("here",e)
         return oiginal_lead_values
@@ -194,30 +177,15 @@ def check_exists_columns_values(lead,lead_values):
 
 def update_filters_collection(filters_collection,column_name,value):
     try:
-        values_list = []
         filter_document = filters_collection.find_one({"column": column_name})
         if filter_document:
-            if column_name not in columns_that_have_list:
-                if value not in filter_document["values"] and value != "":
-                    values_list = filter_document["values"]
-                    values_list.append(value)
-            else:
-                values_list = filter_document["values"]
-                new_values_list = value.split(",")
-                for element_value in new_values_list:
-                    if element_value not in values_list and element_value != "":
-                        values_list.append(element_value)
-            filters_collection.update_one(
-                {"column": column_name},
-                {"$set": {"values": values_list}}
-            )
+            if value not in filter_document["values"]:
+                filters_collection.update_one(
+                    {"column": column_name},
+                    {"$push": {"values": value}}
+                )
         else:
-            if column_name not in columns_that_have_list:
-                if value != "":
-                    values_list = [value]
-            else:
-                values_list = value.split(",")
-            filters_collection.insert_one({"column": column_name, "values": values_list})
+            filters_collection.insert_one({"column": column_name, "values": [value]})
     except Exception as e:
         print(e)
         pass

@@ -39,6 +39,43 @@
         </div>
     </div>
 </div>
+<!--
+<div class="container">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+        <div class="card">
+            <div class="card-header text-white" style="background-color:#443ea2;">
+            <h4 class="text-center text-white">Upload CSV File</h4>
+            </div>
+            <div class="card-body">
+            <form id="file-form">
+                {% csrf_token %}
+                <div class="form-group">
+                <label for="file">Select CSV File</label>
+                <input type="file" class="form-control-file" id="csv_file" name="csv_file" accept=".csv">
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-block text-white" style="background-color:#443ea2;">Upload</button>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" style="width: 0%;"></div>
+                </div>
+                <br>
+                <div class="alert alert-danger" role="alert" style="display:none;" id="div_message">
+                </div>
+            </form>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+-->
+<!--
+<div id="spinner" style="display:none;">
+    <img src="{% static 'images/Spinner.gif' %}" alt="" Loading..." />
+</div>
+-->
+
 {% endblock%}
 
 {% block modals %}
